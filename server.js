@@ -35,7 +35,7 @@ const notificationRoutes = require('./Routes/notification.js');
 const downloadRoutes = require('./Routes/download.js');
 const authRoutes = require('./Routes/authRoutes.js');
 const adminRoutes = require('./Routes/admin.js');
-
+const sliderRoutes= require('./routes/sliderRoutes');
 // Admin authentication routes
 app.use('/api/site-settings', siteSettingsRoutes);
 app.use('/api/research', researchRoutes);
@@ -44,6 +44,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/downloads', downloadRoutes);
 app.use('/api/admin/auth', authRoutes);
 app.use('/api/admin/admins', adminRoutes);
+app.use('/api/slider', sliderRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

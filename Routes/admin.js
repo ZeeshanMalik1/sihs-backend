@@ -9,7 +9,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 // @access  Private (Super Admin only)
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    // Check if current admin is super admin
+    // Check if current admin is super admin 
     if (req.admin.role !== 'super_admin') {
       return res.status(403).json({ 
         success: false, 
@@ -44,7 +44,7 @@ router.post('/', authMiddleware, async (req, res) => {
       });
     }
 
-    const { name, email, password, role, permissions } = req.body;
+    const { name, email, password, role, permissions, phone, department } = req.body;
 
     // Validation
     if (!name || !email || !password) {
@@ -76,7 +76,9 @@ router.post('/', authMiddleware, async (req, res) => {
       email,
       password,
       role: role || 'admin',
-      permissions: permissions || []
+      permissions: permissions || [],
+      phone: phone || '',
+      department: department || ''
     });
 
     res.status(201).json({
@@ -113,11 +115,11 @@ router.put('/:id', authMiddleware, async (req, res) => {
       });
     }
 
-    const { name, email, role, permissions, isActive } = req.body;
+    const { name, email, role, permissions, isActive, phone, department } = req.body;
 
     const admin = await Admin.findByIdAndUpdate(
       req.params.id,
-      { name, email, role, permissions, isActive },
+      { name, email, role, permissions, isActive, phone, department },
       { new: true, runValidators: true }
     ).select('-password');
 
@@ -162,8 +164,8 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       });
     }
 
-    // Prevent self-deletion
-    if (req.params.id === req.adminId) {
+    // Prevent self-deletion (compare string values)
+    if (String(req.params.id) === String(req.adminId)) {
       return res.status(400).json({ 
         success: false, 
         message: 'Cannot delete your own account' 

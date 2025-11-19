@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -11,6 +12,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Rate limiter for login endpoint
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 requests per windowMs
+  message: 'Too many login attempts, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 // MongoDB Connection
 const connectDB = async () => {
   try {
@@ -26,7 +35,7 @@ const connectDB = async () => {
 };
 
 connectDB();
-
+app.use('/api/admin/auth/login', loginLimiter);
 // Routes
 const siteSettingsRoutes = require('./Routes/siteSettings.js');
 const researchRoutes = require('./Routes/research.js');
@@ -35,7 +44,7 @@ const notificationRoutes = require('./Routes/notification.js');
 const downloadRoutes = require('./Routes/download.js');
 const authRoutes = require('./Routes/authRoutes.js');
 const adminRoutes = require('./Routes/admin.js');
-const sliderRoutes= require('./Routes/slider.js');
+// const sliderRoutes= require('./Routes/slider.js');
 // Admin authentication routes
 app.use('/api/site-settings', siteSettingsRoutes);
 app.use('/api/research', researchRoutes);
@@ -45,7 +54,7 @@ app.use('/api/downloads', downloadRoutes);
 app.use('/api/admin/auth', authRoutes);
 app.use('/api/admin/admins', adminRoutes);
 // app.use('/api/slider', require('./routes/sliderRoutes'));
-app.use('/api/slider', sliderRoutes);
+// app.use('/api/slider', sliderRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

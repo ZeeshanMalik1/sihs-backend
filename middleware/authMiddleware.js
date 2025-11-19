@@ -1,4 +1,3 @@
-// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const Admin = require('../Models/Admin.js');
 
@@ -11,17 +10,32 @@ const authMiddleware = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({ 
         success: false, 
-        message: 'No token provided, access denied' 
+        message: 'Access denied. No token provided.' 
       });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const admin = await Admin.findById(decoded.adminId).select('-password');
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (jwtErr) {
+      if (jwtErr.name === 'TokenExpiredError') {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Token expired. Please login again.' 
+        });
+      }
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Invalid token.' 
+      });
+    }
+
+    const admin = await Admin.findById(decoded.adminId);
     
     if (!admin || !admin.isActive) {
       return res.status(401).json({ 
         success: false, 
-        message: 'Token is not valid' 
+        message: 'Admin account is inactive or not found.' 
       });
     }
 
@@ -30,24 +44,9 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
-    
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid token' 
-      });
-    }
-    
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Token expired' 
-      });
-    }
-    
     res.status(500).json({ 
       success: false, 
-      message: 'Server error in authentication' 
+      message: 'Authentication error.' 
     });
   }
 };

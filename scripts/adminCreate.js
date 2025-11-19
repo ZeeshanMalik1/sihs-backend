@@ -88,8 +88,8 @@ const initializeAdmins = async () => {
     process.exit(0);
   } catch (error) {
     console.error('❌ Initialization error:', error);
-    process.exit(1);
   }
 };
 
+  process.exit(1);
 initializeAdmins();

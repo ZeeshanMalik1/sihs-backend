@@ -44,6 +44,7 @@ const notificationRoutes = require('./Routes/notification.js');
 const downloadRoutes = require('./Routes/download.js');
 const authRoutes = require('./Routes/authRoutes.js');
 const adminRoutes = require('./Routes/admin.js');
+const departmentRoutes=require('./Routes/department.js')
 // const sliderRoutes= require('./Routes/slider.js');
 // Admin authentication routes
 app.use('/api/site-settings', siteSettingsRoutes);
@@ -53,6 +54,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/downloads', downloadRoutes);
 app.use('/api/admin/auth', authRoutes);
 app.use('/api/admin/admins', adminRoutes);
+app.use('/api/departments', departmentRoutes);
+
 // app.use('/api/slider', require('./routes/sliderRoutes'));
 // app.use('/api/slider', sliderRoutes);
 
